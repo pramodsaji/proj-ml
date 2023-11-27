@@ -3,8 +3,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+import numpy as np
 
-# 
+# Function to create the sequence
+def create_sequence(data):
+    X = []
+    y = []
+    # Extracting unique values of 'NumericDate'
+    unique_numeric_dates = data['NumericDate'].unique()
+
+    for und in unique_numeric_dates:
+        # Extracting data for each unique date
+        date_data = data[data['NumericDate'] == und]
+        unique_menu_items = date_data['MenuItem'].unique()
+
+        for umi in unique_menu_items:
+            # Extracting data for each unique menu item
+            menu_item_data = date_data[date_data['MenuItem'] == umi]
+            # Sorting the data by 'TimeOfDay'
+            menu_item_data = menu_item_data.sort_values(by=['TimeOfDay'])
+            for i in range(0, len(menu_item_data)-3):
+                z = []
+                for j in range(0, 3):
+                    z.append([menu_item_data.iloc[i+j]['NumericDate'], menu_item_data.iloc[i+j]['TimeOfDay'], menu_item_data.iloc[i+j]['MenuItem']])
+                X.append(z)
+                y.append(menu_item_data.iloc[i+3]['Quantity'])
+    return np.array(X), np.array(y)
+
+# Function to encode the categorical columns
 def encodeLabels(data, categorical_columns):
     label_encoders = {}
     for col in categorical_columns:
